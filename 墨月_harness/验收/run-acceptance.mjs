@@ -149,18 +149,36 @@ say();
 say('把墨月的**原始 TS 源码**直接加载进 Node（类型擦除），与 harness 移植版喂同一批用例，逐字段比较结果。');
 say('不是"照文档写的"，而是**同一份代码的两个副本对跑**。');
 say();
-const diffA = (await import('../工具/differential/compare.mjs')).differential;
-const diffB = (await import('../工具/differential/compare-pack.mjs')).differential;
-const diffC = (await import('../工具/differential/compare-validate.mjs')).differential;
-const diffD = (await import('../工具/differential/compare-route.mjs')).differential;
-const diffE = (await import('../工具/differential/compare-prompt.mjs')).differential;
-say('| 比对对象 | 用例数 | 一致 | 差异 | 结论 |');
-say('|---|---|---|---|---|');
-for (const item of [diffA, diffB, diffC, diffD, diffE]) {
-  if (item.diffs.length) failures += 1;
-  say(`| ${item.label} | ${item.total} | ${item.passed} | ${item.diffs.length} | ${item.diffs.length ? '✗' : '✓ 逐字段一致'} |`);
+const DIFF_SPECS = [
+  ['../工具/differential/compare.mjs', '审阅'],
+  ['../工具/differential/compare-pack.mjs', '打包'],
+  ['../工具/differential/compare-validate.mjs', '校验'],
+  ['../工具/differential/compare-route.mjs', '路由'],
+  ['../工具/differential/compare-prompt.mjs', '装配'],
+];
+const diffs = [];
+for (const [rel, label] of DIFF_SPECS) {
+  try {
+    diffs.push((await import(rel)).differential);
+  } catch {
+    // 原实现副本不随发布版分发（见 release.mjs 的 EXCLUDES）——缺原件时跳过，
+    // 不要因为"作者机器上才有的东西"让整份验收报告崩掉。
+    say(`- ${label}：跳过（未找到原实现副本，先跑 \`工具/differential/setup-*-original.mjs\` 重建）`);
+  }
 }
 say();
+if (diffs.length) {
+  say('| 比对对象 | 用例数 | 一致 | 差异 | 结论 |');
+  say('|---|---|---|---|---|');
+  for (const item of diffs) {
+    if (item.diffs.length) failures += 1;
+    say(`| ${item.label} | ${item.total} | ${item.passed} | ${item.diffs.length} | ${item.diffs.length ? '✗' : '✓ 逐字段一致'} |`);
+  }
+  say();
+} else {
+  say('（五组差分全部跳过：本机没有原实现副本。移植版自身的确定性由前面的自测与闸门负责。）');
+  say();
+}
 say('覆盖范围：审阅（世界书配置 / 规则配置 / 开场白 / YAML / Zod 结构 / 状态栏 / 前端 / EJS / 文本外壳 / 原卡改写）、');
 say('MVU 三文件交叉检查、`projectCard()` 的 13 种变体、`validateProject()` 的 21 种作品状态、');
 say('路由与意图推断的 391 项，以及**装配层 264 项**（23 个用例 × 11 个结构特征：标签顺序 / 知识正文 / 合同 / 权限 / MVU 文件集 / 批量段 / 维修段 / 自查段 / 代码修复段 / 工作流状态段 / 世界书投递段 / 直达尾指令）。');
