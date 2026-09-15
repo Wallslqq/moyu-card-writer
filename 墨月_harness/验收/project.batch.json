@@ -1,0 +1,137 @@
+{
+  "id": "proj-fixture-1",
+  "title": "异乡人",
+  "summary": "打包链路夹具作品",
+  "stage": "draft",
+  "activeSection": "character",
+  "characters": [
+    {
+      "id": "char-1",
+      "name": "周梦瑶",
+      "basicInformation": "<周梦瑶_基础信息>\n上海人，2025 年在读。\n</周梦瑶_基础信息>",
+      "lifeStructure": "<周梦瑶_生活结构>\n每周三次排练，其余时间泡在图书馆。\n</周梦瑶_生活结构>",
+      "characterNature": "<周梦瑶_人物性情>\n内核是想要被看见。\n</周梦瑶_人物性情>",
+      "sceneExpression": "",
+      "clothingStyle": "",
+      "notes": "",
+      "createdAt": "2026-09-14T00:00:00.000Z",
+      "updatedAt": "2026-09-14T00:00:00.000Z"
+    }
+  ],
+  "worldbook": [
+    {
+      "id": "wb-1",
+      "title": "异乡人_世界设定",
+      "content": "<异乡人_世界设定>\n小型世界观正文。\n</异乡人_世界设定>",
+      "keys": [],
+      "secondaryKeys": [],
+      "activation": "always",
+      "placement": "before_character",
+      "depth": 0,
+      "order": 1,
+      "probability": 100,
+      "enabled": true,
+      "scale": "small",
+      "createdAt": "2026-09-14T00:00:00.000Z",
+      "updatedAt": "2026-09-14T00:00:00.000Z"
+    },
+    {
+      "id": "8171b54c-7333-409e-939b-4525fed425eb",
+      "title": "钟楼_地点设定",
+      "content": "<钟楼_地点设定>\n钟楼是旧城的一座报时钟塔，也是旧城里唯一按固定时刻报时的公共设施。塔顶四面各有一面钟，钟机由值守人上弦、校准。\n\n每到整点，钟楼敲响一次钟声，钟声覆盖半个城区：范围以内的人以钟声对时，用它安排开门、交接和约见；范围以外听不到钟声，只能靠自己的计时工具或向别人打听。钟楼只报整点，不报刻钟，两次钟声之间过了多久，各人只能自己估。\n\n钟楼只在整点前后有人值守。值守人在这段时间上弦、校准并应答来客；钟声敲过、钟机复位之后，塔门落锁，钟室与楼梯不对外开放。要见值守人、查看钟机或核对报时是否准确，只能赶在整点这段值守时间内，错过就要等下一个整点。\n\n钟声能听见，并不代表钟楼照常运转。大雾、逆风或雨声嘈杂时，钟声传不出多远；钟机故障或值守人缺席时，当次整点不会响。覆盖范围内的人只能察觉这一声没响，无法单凭听觉分辨是天气、故障还是缺勤，要走到塔下或查阅值守记录才能确认。\n</钟楼_地点设定>",
+      "keys": [
+        "钟楼",
+        "钟声",
+        "报时",
+        "钟机"
+      ],
+      "secondaryKeys": [],
+      "activation": "keyword",
+      "placement": "before_character",
+      "depth": 0,
+      "order": 60,
+      "probability": 100,
+      "enabled": true,
+      "createdAt": "2026-09-14T18:04:15.546Z",
+      "updatedAt": "2026-09-14T18:04:15.546Z",
+      "scale": "medium"
+    },
+    {
+      "id": "4a3e8ed6-e410-4d31-aab1-d08596f4219d",
+      "title": "码头_地区设定",
+      "content": "<码头_地区设定>\n码头是河口内侧的一处货运集散地。吃水够的船才停得进深水湾，临水面是泊位与浮桥，往里依次是堆场与货栈、鱼市，再往里是仓后巷与暗巷，最深处是外闸。这几处彼此相邻，步行半个时辰之内都能走到。\n\n码头靠潮水运转。潮门开时船进船出，闸口封着时大船只能等下一次开潮。货从船上卸下即入堆场或货栈，登记、过秤、交割都在这两处办完，再由此分往城内各处，或装上下一班船运走。集散、买卖、转运三件事在同一个湾里发生，靠的是同一批泊位、同一个外闸和同一本进出账。\n\n鱼市与暗巷是同一个湾里的两套秩序。鱼市在白天开，进场先在市口验货、上公秤，再上摊，摊位按脚位先后算，当日的场地钱与抽成当日结清。暗巷不挂招牌，得由湾内的人带路才找得到，谈货、验货、交割都在巷子里一步做完。同一批货从鱼市散出后，可以经堆场与仓后巷转到暗巷，也可以反过来进仓过秤；两边来回的那部分，不进白天的册子。\n\n湾里认货与路，不认人。能进场、能过闸、能上船的凭据是货单、舱位与在场的熟人；没有这些的人照样进得来，只是每一道关口都要重新谈一次。带着货的人比空手的人好说话，指着货的人比报得出名号的人好说话。\n\n白天的码头归有名字的人管：搬运工会有班次和行头，货栈有管事，鱼市有市头与值摊，船行有代理人。出了争执，谁的人都找得到自己的头，账目落在册子上。入夜后船照来、货照走，鱼市收摊而堆场不停，当班的是另一批人：名字与来历到夜里不作数，谁在货跟前、谁的手摸着货，谁就说话算数，夜里的账以当场交割为准，不与白天的册子合并。白班与夜班互不承认对方的处置，也都不向对方追索。\n\n码头只管湾里的事。湾内的秩序靠当班的这批人维持，出了外闸，码头管不着。\n</码头_地区设定>",
+      "keys": [],
+      "secondaryKeys": [],
+      "activation": "always",
+      "placement": "before_character",
+      "depth": 0,
+      "order": 1,
+      "probability": 100,
+      "enabled": true,
+      "createdAt": "2026-09-14T18:04:15.548Z",
+      "updatedAt": "2026-09-14T18:04:15.548Z",
+      "scale": "medium"
+    }
+  ],
+  "rules": [
+    {
+      "id": "rule-1",
+      "title": "称呼规则",
+      "content": "<创作规则_称呼>\n不得替使用者决定台词。\n</创作规则_称呼>",
+      "placement": "system_depth",
+      "depth": 0,
+      "order": 1,
+      "enabled": true,
+      "createdAt": "2026-09-14T00:00:00.000Z",
+      "updatedAt": "2026-09-14T00:00:00.000Z"
+    }
+  ],
+  "opening": {
+    "firstMessage": "她推开门。",
+    "alternateGreetings": [
+      "",
+      "另一个开场。"
+    ]
+  },
+  "mvu": {
+    "enabled": true,
+    "initvarDesign": "开局值设计",
+    "updateRuleDesign": "变化规则设计",
+    "initvarSource": "主角:\n  金币: 0",
+    "updateRulesSource": "变量更新规则:\n  主角:\n    金币:\n      check: 当交易发生时\n      type: number",
+    "schemaSource": "import { registerMvuSchema } from 'https://example.invalid/mvu_zod.js';\n\nexport const Schema = z.object({\n  主角: z.object({ 金币: z.coerce.number() }),\n});\n\n$(() => { registerMvuSchema(Schema); });"
+  },
+  "statusbar": {
+    "kind": "native",
+    "requirements": "看金币",
+    "contract": "技术路线：原生 HTML",
+    "source": "<!doctype html>\n<html><head><meta charset=\"utf-8\"></head><body><div data-mvu-path=\"stat_data.主角.金币\" data-fallback=\"未知\"></div><script>\nwaitGlobalInitialized('Mvu').then(() => { const d = Mvu.getMvuData({ type: 'message' }); document.body.dataset.ready = '1'; });\n</script></body></html>"
+  },
+  "frontend": {
+    "requirements": "看原文",
+    "contract": "唯一外层标签：`moyu_ui`",
+    "source": "<moyu_ui>\n原始正文\n</moyu_ui>",
+    "previewHtml": "<!doctype html>\n<html><head><meta charset=\"utf-8\"></head><body><div id=\"root\"></div><script>\nconst id = getCurrentMessageId();\nconst raw = getChatMessages(id)[0]?.message || '';\nconst box = document.createElement('div');\nbox.textContent = raw.includes('<moyu_ui>') ? raw : '无';\ndocument.getElementById('root').replaceChildren(box);\n</script></body></html>",
+    "testMessage": ""
+  },
+  "ejsCharacters": [
+    {
+      "id": "ejs-1",
+      "name": "状态",
+      "entryName": "[EJS] 状态",
+      "entryOrder": 3,
+      "requirements": "金币为正时提示",
+      "contract": "按合同输出：当 stat_data.主角.金币 大于 0 时输出「有钱」，否则不输出。",
+      "source": "<% if (getvar('stat_data.主角.金币') > 0) { %>有钱<% } %>"
+    }
+  ],
+  "assets": [],
+  "materials": [],
+  "artifacts": [],
+  "threads": {},
+  "activeThreadIds": {},
+  "recoveryReplies": [],
+  "scriptProjects": [],
+  "createdAt": "2026-09-14T00:00:00.000Z",
+  "updatedAt": "2026-09-14T18:04:15.548Z"
+}

@@ -1,0 +1,13 @@
+{
+  "name": "moyu-harness-tools",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "墨月 Harness 确定性层：check（静态校验）与 pack（打包）。依赖版本与墨月写卡器保持一致。",
+  "dependencies": {
+    "acorn": "^8.18.0",
+    "vue": "^3.5.17",
+    "yaml": "^2.9.0",
+    "zod": "^4.5.4"
+  }
+}

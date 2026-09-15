@@ -1,0 +1,26 @@
+[
+  {
+    "run": 1,
+    "outcome": "整组被拒（闸门拦下真实违规）",
+    "agents": 3,
+    "items": ["钟楼", "码头"],
+    "detail": "第 2 项把 3 个世界书条目塞进一个 item；逐项 check 通过（worldview_medium 允许正文多块），但整组准备按契约拒绝：",
+    "gateOutput": "✗ 整组检查未通过：「码头」必须只含一个正文与配对配置；多条内容分别放入 items。",
+    "prepared": false,
+    "note": "证明两层校验不可互相替代：逐项 check ≠ 整组合法。编排据此在每项提示词里显式写入整组硬规则。"
+  },
+  {
+    "run": 2,
+    "outcome": "整组准备成功并写入",
+    "agents": 3,
+    "items": ["钟楼", "码头"],
+    "prepareOutput": "✓ 整组检查通过，已放入待确认区：2026-09-14T18-04-05-804Z-batch:worldbook-b9b18a（2 项）",
+    "pendingId": "2026-09-14T18-04-05-804Z-batch:worldbook-b9b18a",
+    "prepared": true,
+    "applyOutput": "✓ 已一起写入 2 条世界书内容",
+    "afterApply": "钟楼_地点设定(keyword,order60) / 码头_地区设定(always,order1)",
+    "repeatApply": "✗ 这份内容已经写入过（…）不要重复确认。 exit=1",
+    "cardEntries": 11,
+    "note": "第 2 项执行者自述：原文件塞了 3 条正是被整组拒绝的原因，本项已按契约收敛为唯一 1 条 —— 闸门拒绝 → 编排纠偏 → 重生成合规的闭环成立。"
+  }
+]

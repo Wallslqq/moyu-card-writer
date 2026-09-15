@@ -1,0 +1,15 @@
+[
+  {
+    "file": "验收/generated.worldbook.md",
+    "taskId": "worldview_small",
+    "by": "子代理（回退读取知识原文）",
+    "note": "按合同产出 text + yaml 两个代码块；应通过"
+  },
+  {
+    "file": "验收/generated.worldbook.v2.md",
+    "taskId": "worldview_small",
+    "by": "子代理（真实消费 request.worldbook.md）",
+    "note": "内容成立但未使用代码块交付；应被 check 拦下（格式类失败）",
+    "expectFail": true
+  }
+]

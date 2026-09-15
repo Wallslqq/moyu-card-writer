@@ -1,0 +1,94 @@
+{
+  "id": "proj-fixture-1",
+  "title": "异乡人",
+  "summary": "打包链路夹具作品",
+  "stage": "draft",
+  "activeSection": "character",
+  "characters": [
+    {
+      "id": "char-1",
+      "name": "周梦瑶",
+      "basicInformation": "<周梦瑶_基础信息>\n上海人，2025 年在读。\n</周梦瑶_基础信息>",
+      "lifeStructure": "<周梦瑶_生活结构>\n每周三次排练，其余时间泡在图书馆。\n</周梦瑶_生活结构>",
+      "characterNature": "<周梦瑶_人物性情>\n内核是想要被看见。\n</周梦瑶_人物性情>",
+      "sceneExpression": "",
+      "clothingStyle": "",
+      "notes": "",
+      "createdAt": "2026-09-14T00:00:00.000Z",
+      "updatedAt": "2026-09-14T00:00:00.000Z"
+    }
+  ],
+  "worldbook": [
+    {
+      "id": "wb-1",
+      "title": "异乡人_世界设定",
+      "content": "<异乡人_世界设定>\n小型世界观正文。\n</异乡人_世界设定>",
+      "keys": [],
+      "secondaryKeys": [],
+      "activation": "always",
+      "placement": "before_character",
+      "depth": 0,
+      "order": 1,
+      "probability": 100,
+      "enabled": true,
+      "scale": "small",
+      "createdAt": "2026-09-14T00:00:00.000Z",
+      "updatedAt": "2026-09-14T00:00:00.000Z"
+    }
+  ],
+  "rules": [
+    {
+      "id": "rule-1",
+      "title": "称呼规则",
+      "content": "<创作规则_称呼>\n不得替使用者决定台词。\n</创作规则_称呼>",
+      "placement": "system_depth",
+      "depth": 0,
+      "order": 1,
+      "enabled": true,
+      "createdAt": "2026-09-14T00:00:00.000Z",
+      "updatedAt": "2026-09-14T00:00:00.000Z"
+    }
+  ],
+  "opening": { "firstMessage": "她推开门。", "alternateGreetings": ["", "另一个开场。"] },
+  "mvu": {
+    "enabled": true,
+    "initvarDesign": "开局值设计",
+    "updateRuleDesign": "变化规则设计",
+    "initvarSource": "主角:\n  金币: 0",
+    "updateRulesSource": "变量更新规则:\n  主角:\n    金币:\n      check: 当交易发生时\n      type: number",
+    "schemaSource": "import { registerMvuSchema } from 'https://example.invalid/mvu_zod.js';\n\nexport const Schema = z.object({\n  主角: z.object({ 金币: z.coerce.number() }),\n});\n\n$(() => { registerMvuSchema(Schema); });"
+  },
+  "statusbar": {
+    "kind": "native",
+    "requirements": "看金币",
+    "contract": "技术路线：原生 HTML",
+    "source": "<!doctype html>\n<html><head><meta charset=\"utf-8\"></head><body><div data-mvu-path=\"stat_data.主角.金币\" data-fallback=\"未知\"></div><script>\nwaitGlobalInitialized('Mvu').then(() => { const d = Mvu.getMvuData({ type: 'message' }); document.body.dataset.ready = '1'; });\n</script></body></html>"
+  },
+  "frontend": {
+    "requirements": "看原文",
+    "contract": "唯一外层标签：`moyu_ui`",
+    "source": "<moyu_ui>\n原始正文\n</moyu_ui>",
+    "previewHtml": "<!doctype html>\n<html><head><meta charset=\"utf-8\"></head><body><div id=\"root\"></div><script>\nconst id = getCurrentMessageId();\nconst raw = getChatMessages(id)[0]?.message || '';\nconst box = document.createElement('div');\nbox.textContent = raw.includes('<moyu_ui>') ? raw : '无';\ndocument.getElementById('root').replaceChildren(box);\n</script></body></html>",
+    "testMessage": ""
+  },
+  "ejsCharacters": [
+    {
+      "id": "ejs-1",
+      "name": "状态",
+      "entryName": "[EJS] 状态",
+      "entryOrder": 3,
+      "requirements": "金币为正时提示",
+      "contract": "按合同输出：当 stat_data.主角.金币 大于 0 时输出「有钱」，否则不输出。",
+      "source": "<% if (getvar('stat_data.主角.金币') > 0) { %>有钱<% } %>"
+    }
+  ],
+  "assets": [],
+  "materials": [],
+  "artifacts": [],
+  "threads": {},
+  "activeThreadIds": {},
+  "recoveryReplies": [],
+  "scriptProjects": [],
+  "createdAt": "2026-09-14T00:00:00.000Z",
+  "updatedAt": "2026-09-14T00:00:00.000Z"
+}

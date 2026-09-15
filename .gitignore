@@ -1,0 +1,17 @@
+# 依赖：用 npm ci 安装，不要把 node_modules 提交进仓库
+墨月_harness/工具/node_modules/
+
+# 使用者自己的作品、对话、待确认稿、附件——绝不入库
+墨月_harness/状态/
+
+# 差分对拍用的"原实现副本"：由 setup-*-original.mjs 指向你自己的墨月源码后重建
+墨月_harness/工具/differential/original/
+墨月_harness/工具/differential/pack-original/
+墨月_harness/工具/differential/prompt-original/
+墨月_harness/工具/differential/validate-original/
+
+# 系统杂物
+Thumbs.db
+.DS_Store
+desktop.ini
+*.log
