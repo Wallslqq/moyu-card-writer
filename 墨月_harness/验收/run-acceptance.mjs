@@ -150,20 +150,27 @@ say('把墨月的**原始 TS 源码**直接加载进 Node（类型擦除），�
 say('不是"照文档写的"，而是**同一份代码的两个副本对跑**。');
 say();
 const DIFF_SPECS = [
-  ['../工具/differential/compare.mjs', '审阅'],
-  ['../工具/differential/compare-pack.mjs', '打包'],
-  ['../工具/differential/compare-validate.mjs', '校验'],
-  ['../工具/differential/compare-route.mjs', '路由'],
-  ['../工具/differential/compare-prompt.mjs', '装配'],
+  ['../工具/differential/compare.mjs', '审阅', ['工具/differential/original/response.ts']],
+  ['../工具/differential/compare-pack.mjs', '打包', ['工具/differential/pack-original/character-card.ts']],
+  ['../工具/differential/compare-validate.mjs', '校验', ['工具/differential/validate-original/workspace.ts']],
+  ['../工具/differential/compare-route.mjs', '路由', ['工具/differential/original/response.ts', '工具/differential/validate-original/workspace.ts']],
+  ['../工具/differential/compare-prompt.mjs', '装配', ['工具/differential/original/response.ts', '工具/differential/prompt-original/prompt-runtime.ts']],
 ];
+const HARNESS_DIR = path.resolve(HERE, '..');
 const diffs = [];
-for (const [rel, label] of DIFF_SPECS) {
+for (const [rel, label, requires] of DIFF_SPECS) {
+  // 前置检查：原实现副本不随发布版分发（见 release.mjs 的 EXCLUDES）。有些 compare
+  // 脚本在**模块加载期**就 `process.exit(2)`，try/catch 拦不住——所以必须先查存在性，
+  // 不能等 import 抛错。缺原件就跳过，别让整份验收报告崩在这种环节。
+  const missing = requires.filter((require) => !fs.existsSync(path.join(HARNESS_DIR, require)));
+  if (missing.length) {
+    say(`- ${label}：跳过（未找到原实现副本，先跑 \`工具/differential/setup-*-original.mjs\` 重建）`);
+    continue;
+  }
   try {
     diffs.push((await import(rel)).differential);
-  } catch {
-    // 原实现副本不随发布版分发（见 release.mjs 的 EXCLUDES）——缺原件时跳过，
-    // 不要因为"作者机器上才有的东西"让整份验收报告崩掉。
-    say(`- ${label}：跳过（未找到原实现副本，先跑 \`工具/differential/setup-*-original.mjs\` 重建）`);
+  } catch (error) {
+    say(`- ${label}：跳过（加载失败：${error?.message ?? error}）`);
   }
 }
 say();

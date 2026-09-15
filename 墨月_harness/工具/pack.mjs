@@ -23,7 +23,7 @@ import { workspaceArtifactReview } from './lib/review.mjs';
 import { formatArtifactDiagnostics } from './lib/diagnostics.mjs';
 import { stableId } from './lib/ids.mjs';
 import { newProject, addModule, writeSource } from './lib/workshop.mjs';
-import { writePending, readPending, savePending, listPending } from './lib/pending.mjs';
+import { writePending, readPending, savePending, listPending, deletePending, discardUnconfirmed } from './lib/pending.mjs';
 import path2 from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -345,6 +345,27 @@ function main() {
     return 0;
   }
 
+  // ── 清理待确认区（只清"尚未写入"的稿）─────────────────────────────
+  if (flags.discard || flags['discard-all']) {
+    if (flags['discard-all']) {
+      const removed = discardUnconfirmed(stateRoot);
+      console.log(removed.length ? `✓ 已清理 ${removed.length} 份未写入的待确认稿` : '（没有需要清理的未写入稿）');
+      for (const id of removed) console.log(`  - ${id}`);
+      const kept = listPending(stateRoot).filter((item) => item.confirmed);
+      if (kept.length) console.log(`  保留 ${kept.length} 份已写入的凭据稿。`);
+      return 0;
+    }
+    if (flags.discard === true) {
+      console.error('✗ --discard 后面缺少待确认稿 id；用 --list 查看。要清空未写入的稿用 --discard-all。');
+      return 2;
+    }
+    const id = flags.discard;
+    const result = deletePending(stateRoot, id);
+    if (!result.removed) { console.error(`✗ ${result.reason}`); return 1; }
+    console.log(`✓ 已删除待确认稿：${id}`);
+    return 0;
+  }
+
   // ── 准备待确认稿（等价 moyu_prepare_artifact）──────────────────────
   if (flags.prepare) {
     const project = readProject(flags.project);
@@ -376,7 +397,9 @@ function main() {
     try { prepared = prepareBatchArtifact(project, section, items); }
     catch (error) { console.error(`✗ 整组检查未通过：${error.message}`); return 1; }
     const record = writePending(stateRoot, {
-      taskId: `batch:${section}`,
+      // taskId 用 `batch-<section>` 而不是 `batch:<section>`：冒号进文件名会在 NTFS 上
+      // 变成数据流分隔符（见 lib/pending.mjs 的 pendingId 注释）。
+      taskId: `batch-${section}`,
       title: prepared.title,
       content: prepared.content,
       format: 'text',
@@ -443,7 +466,7 @@ function main() {
     } catch (error) { console.error(`✗ 写入失败：${error.message}`); return 1; }
   }
 
-  console.error('用法：--card | --embed | --read | --prepare | --prepare-batch | --list | --apply | --self-test（详见文件头）');
+  console.error('用法：--card | --embed | --read | --prepare | --prepare-batch | --list | --apply | --discard <id> | --discard-all | --self-test（详见文件头）');
   return 2;
 }
 

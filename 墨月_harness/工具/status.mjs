@@ -22,6 +22,7 @@ import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 
 import { resolvePageTask } from './lib/route.mjs';
+import { readState as readCardState } from './lib/cardfile.mjs';
 import { DOMAIN_LABELS, domainLabel, readKnowledge } from './lib/prompt.mjs';
 import { validateProject } from './lib/validate.mjs';
 import { createCharacter, createWorldbookEntry, createRule, createEjsCharacter } from './lib/apply.mjs';
@@ -30,14 +31,20 @@ import { emptyProject } from './new-project.mjs';
 const HARNESS_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PROJECT_DIR = path.join(HARNESS_ROOT, '状态', '作品');
 
-/** 人物六栏目（栏目标识要与作品工程字段、路由 focus.area 完全一致）。 */
+/**
+ * 人物栏位（栏目标识要与作品工程字段、路由 focus.area 完全一致）。
+ *
+ * 中文名与 `工具\lib\cardfile.mjs` 的 CHARACTER_AREAS、以及知识库里的栏位名**保持一致**
+ * （2026-09-15 修：早先这里写「场景表现／衣着风格」，档案层写「场景表达／穿衣风格」，
+ * 同一样东西两套词，作者与 agent 都会看糊涂）。
+ */
 export const CHAR_AREAS = [
   ['basicInformation', '基础信息'],
+  ['clothingStyle', '穿衣风格'],
   ['lifeStructure', '生活结构'],
   ['characterNature', '人物性情'],
-  ['sceneExpression', '场景表现'],
-  ['clothingStyle', '衣着风格'],
-  ['notes', '备注'],
+  ['sceneExpression', '场景表达'],
+  ['notes', '测试笔记'],
 ];
 const MVU_FILES = [
   ['initvarDesign', '开局值设计'],
@@ -76,18 +83,29 @@ export function inspect(project) {
 
   const pushCharacter = () => {
     const list = [];
+    /** 档案层记录的"作者确认无需"栏位：账本看不出这个状态，必须读档案。 */
+    const skipped = (name) => {
+      const state = readCardState(project.title);
+      const item = state?.modules?.character?.items?.[name];
+      if (!item) return new Set();
+      return new Set(Object.entries(item.areas ?? {}).filter(([, v]) => v === 'skipped').map(([k]) => k));
+    };
     for (const [index, character] of (project.characters ?? []).entries()) {
       const name = character.name || `未命名人物${index + 1}`;
-      const gaps = CHAR_AREAS.filter(([key]) => !filled(character[key]));
+      const skipSet = skipped(name);
+      const empty = CHAR_AREAS.filter(([key]) => !filled(character[key]));
+      const gaps = empty.filter(([key]) => !skipSet.has(key));
+      const waived = empty.filter(([key]) => skipSet.has(key));
       const area = gaps.length ? gaps[0][0] : '';
       let task = '';
       try { task = resolvePageTask('character', project, { targetId: character.id, area }, '继续', false); } catch { task = ''; }
       list.push({
         id: character.id,
         name,
-        done: CHAR_AREAS.length - gaps.length,
+        done: CHAR_AREAS.length - empty.length,
         total: CHAR_AREAS.length,
         gaps: gaps.map(([key, label]) => ({ key, label })),
+        waived: waived.map(([key, label]) => ({ key, label })),
         task,
       });
     }
@@ -247,7 +265,12 @@ function describe(item) {
     case 'carddata': return d.imported ? '已导入原卡' : '未导入';
     case 'character': {
       if (!d.count) return '还没有人物';
-      return d.items.map((c) => `${c.name} ${c.done}/${c.total}${c.gaps.length ? `（缺 ${c.gaps.map((g) => g.label).join('、')}）` : ''}`).join('｜');
+      return d.items.map((c) => {
+        const parts = [];
+        if (c.gaps.length) parts.push(`缺 ${c.gaps.map((g) => g.label).join('、')}`);
+        if (c.waived?.length) parts.push(`${c.waived.length} 栏作者确认无需`);
+        return `${c.name} ${c.done}/${c.total}${parts.length ? `（${parts.join('；')}）` : ''}`;
+      }).join('｜');
     }
     case 'worldbook': return d.count ? d.items.map((w) => `${w.name}${w.scale ? `（${w.scale}）` : ''}${w.filled ? '' : ' 内容为空'}`).join('｜') : '还没有条目';
     case 'rules': return d.count ? `${d.count} 条` : '还没有规则';
@@ -315,14 +338,26 @@ function selfTest() {
       const character = info.domains.find((d) => d.domain === 'character');
       return character.complete === false && info.domains.length === 11 && Boolean(info.next);
     }],
-    ['人物：六栏目填充计数正确', () => {
+    ['人物：栏目填充计数正确，且缺项按知识库顺序排列', () => {
       const p = empty();
       const c = createCharacter('周梦瑶');
       c.basicInformation = 'x'; c.characterNature = 'y';
       p.characters = [c];
       const info = inspect(p);
       const item = info.domains.find((d) => d.domain === 'character').detail.items[0];
-      return item.done === 2 && item.total === 6 && item.gaps.length === 4 && item.gaps[0].key === 'lifeStructure';
+      // 顺序取知识库的拼接顺序：基础信息 → 穿衣风格 → 生活结构 → 人物性情 → 场景表达。
+      // 已填 基础信息/人物性情，故首个缺项是「穿衣风格」。
+      return item.done === 2 && item.total === 6 && item.gaps.length === 4
+        && item.gaps[0].key === 'clothingStyle'
+        && item.gaps.map((g) => g.key).join(',') === 'clothingStyle,lifeStructure,sceneExpression,notes';
+    }],
+    ['人物：无档案时全部空栏都算缺项，waived 为空', () => {
+      const p = empty();
+      const c = createCharacter('甲');
+      c.basicInformation = 'x';
+      p.characters = [c];
+      const item = inspect(p).domains.find((d) => d.domain === 'character').detail.items[0];
+      return item.gaps.length === 5 && (item.waived ?? []).length === 0;
     }],
     ['人物：栏目补满即视为完成', () => {
       const p = empty();

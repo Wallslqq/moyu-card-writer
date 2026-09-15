@@ -16,10 +16,20 @@ export function pendingDir(root) {
   return path.join(stateDir(root), '待确认');
 }
 
+/**
+ * 生成待确认稿 id。
+ *
+ * `taskId` 会进文件名，而批处理用的是 `batch:<section>` 这种带**冒号**的 taskId。
+ * NTFS 上冒号是数据流分隔符（`file:stream`），带冒号的名字会让 PowerShell 侧
+ * `Get-Content` 报 ParameterBindingException、`Get-ChildItem` 只看到 0 字节宿主项——
+ * 人读、清点、删除都受影响（2026-09-15 实测踩到）。
+ * 所以把 id 里**不能安全进文件名**的字符统一换成 `-`。
+ */
 export function pendingId(taskId, target) {
   const stamp = new Date().toISOString().replace(/[:.]/g, '-');
   const suffix = crypto.createHash('sha1').update(`${taskId}:${target ?? ''}`).digest('hex').slice(0, 6);
-  return `${stamp}-${taskId}-${suffix}`;
+  const safeTaskId = String(taskId).replace(/[:/\\*?"<>|]/g, '-');
+  return `${stamp}-${safeTaskId}-${suffix}`;
 }
 
 export function writePending(root, record) {
@@ -46,6 +56,34 @@ export function savePending(root, record) {
   const file = path.join(pendingDir(root), `${record.id}.json`);
   fs.writeFileSync(file, `${JSON.stringify(record, null, 2)}\n`, 'utf8');
   return record;
+}
+
+/**
+ * 删除一份待确认稿。
+ *
+ * **已写入（`confirmed === true`）的稿子拒绝删除**——它是"这笔已经入账"的凭据。
+ * 真要清理历史请手工处理，工具不替你做这个决定。
+ * 返回 { removed, reason? }。
+ */
+export function deletePending(root, id) {
+  const file = path.join(pendingDir(root), `${id}.json`);
+  if (!fs.existsSync(file)) return { removed: false, reason: '找不到这份待确认稿' };
+  const record = JSON.parse(fs.readFileSync(file, 'utf8'));
+  if (record.confirmed) {
+    return { removed: false, reason: '这份稿已写入作品（confirmed=true），是已入账的凭据，工具拒绝删除。' };
+  }
+  fs.rmSync(file, { force: true });
+  return { removed: true };
+}
+
+/** 清空待确认区里**尚未写入**的稿子；已写入的保留。返回被删的 id 列表。 */
+export function discardUnconfirmed(root) {
+  const removed = [];
+  for (const item of listPending(root)) {
+    if (item.confirmed) continue;
+    if (deletePending(root, item.id).removed) removed.push(item.id);
+  }
+  return removed;
 }
 
 export function listPending(root) {

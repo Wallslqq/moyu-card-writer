@@ -48,7 +48,7 @@ const ITEM_SCHEMA = {
 function itemPrompt(item, index) {
   const file = `${HARNESS}/验收/batch-item-${index + 1}.md`;
   return [
-    '你是墨月写卡 harness 的专项执行者。工作目录 C:\\AI\\DSH_workplace\\酒馆。',
+    '你是墨月写卡 harness 的专项执行者。所有路径都相对于当前工作区根，不要假定盘符或绝对路径。',
     '',
     '本轮是【批处理】（等价墨月的 moyu_prepare_batch）：整组一起准备，作者确认后一起写入。',
     `批处理契约见 ${HARNESS}/流程/批处理层.md，专项知识与合同见 ${HARNESS}/知识库/ 下对应文件。`,
@@ -67,7 +67,7 @@ function itemPrompt(item, index) {
     '   若你认为需要多个条目，不要塞进本项：只产出本项这一个，并在 selfCheckNote 里写明「另需 N 条，建议追加 items」。',
     '   注意：逐项 check **不会**拦这件事（worldview_medium 允许正文多块），但整组准备会因此拒绝整批。',
     `3. 把成品写入临时文件 ${file}。`,
-    `4. 然后运行校验：node ${HARNESS}/工具/check.mjs ${item.taskId} --file ${file}`,
+    `4. 然后运行校验：node ${HARNESS}/工具/check.mjs ${item.taskId} --file ${file} --project ${project}`,
     '5. 如果校验报错，按四段式处方**只修被点名的问题**，重写文件并重新校验，直到通过。',
     `6. 自查整组规则：yaml 配置里的「条目名称」应与本项标题「${item.title}」一致或同族，且正文代码块数量必须为 1。`,
     '7. 不要声称已经写入作品或在酒馆运行通过。',
@@ -111,7 +111,7 @@ const itemsJson = JSON.stringify(
 );
 
 const preparePrompt = [
-  '你是墨月写卡 harness 的整组准备执行者。工作目录 C:\\AI\\DSH_workplace\\酒馆。',
+  '你是墨月写卡 harness 的整组准备执行者。所有路径都相对于当前工作区根，不要假定盘符或绝对路径。',
   '',
   `下面是一批已经逐项生成并自校验过的成品。请原样写入 ${HARNESS}/验收/batch.items.json（不要改动内容）：`,
   '',
